@@ -28,7 +28,7 @@ interface Exercise {
   id: string;
   name: string;
   duration: number;
-  difficulty: "easy" | "medium" | "hard";
+  difficulty: "beginner" | "intermediate" | "advanced";
   category: string;
   benefits: string[];
   icon: any;
@@ -52,19 +52,25 @@ const Exercises = () => {
         const iconMap: any = {
           breathing: Wind,
           meditation: Brain,
+          mindfulness: Brain,
           stretching: TrendingUp,
           focus: Zap,
           relaxation: Heart,
-          movement: Flame
+          movement: Flame,
+          cardio: Flame,
+          strength: TrendingUp
         };
 
         const colorMap: any = {
           breathing: "from-sky-400 to-blue-500",
           meditation: "from-purple-400 to-pink-500",
+          mindfulness: "from-purple-400 to-pink-500",
           stretching: "from-green-400 to-emerald-500",
           focus: "from-amber-400 to-orange-500",
           relaxation: "from-red-400 to-pink-500",
-          movement: "from-orange-400 to-red-500"
+          movement: "from-orange-400 to-red-500",
+          cardio: "from-orange-400 to-red-500",
+          strength: "from-green-400 to-emerald-500"
         };
 
         const exercises = response.exercises || response;
@@ -90,6 +96,10 @@ const Exercises = () => {
     fetchExercises();
   }, []);
 
+  // Get unique categories and difficulties from actual data
+  const categories = ["all", ...new Set(exercises.map(ex => ex.category))];
+  const difficulties = ["all", ...new Set(exercises.map(ex => ex.difficulty))];
+
   const filteredExercises = exercises.filter(exercise => {
     const matchesSearch = exercise.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "all" || exercise.category === selectedCategory;
@@ -99,10 +109,10 @@ const Exercises = () => {
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case "easy": return "bg-success";
-      case "medium": return "bg-warning";
-      case "hard": return "bg-destructive";
-      default: return "bg-muted";
+      case "beginner": return "bg-green-500 text-white";
+      case "intermediate": return "bg-amber-500 text-white";
+      case "advanced": return "bg-red-500 text-white";
+      default: return "bg-gray-500 text-white";
     }
   };
 
@@ -157,27 +167,27 @@ const Exercises = () => {
           <div className="grid grid-cols-2 gap-3">
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
               <SelectTrigger className="h-10 rounded-xl">
-                <SelectValue placeholder="Category" />
+                <SelectValue placeholder="All Categories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="breathing">Breathing</SelectItem>
-                <SelectItem value="mindfulness">Mindfulness</SelectItem>
-                <SelectItem value="movement">Movement</SelectItem>
-                <SelectItem value="cardio">Cardio</SelectItem>
-                <SelectItem value="strength">Strength</SelectItem>
+                {categories.map(category => (
+                  <SelectItem key={category} value={category}>
+                    {category === "all" ? "All Categories" : category.charAt(0).toUpperCase() + category.slice(1)}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
             <Select value={selectedDifficulty} onValueChange={setSelectedDifficulty}>
               <SelectTrigger className="h-10 rounded-xl">
-                <SelectValue placeholder="Difficulty" />
+                <SelectValue placeholder="All Levels" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Levels</SelectItem>
-                <SelectItem value="easy">Easy</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="hard">Hard</SelectItem>
+                {difficulties.map(difficulty => (
+                  <SelectItem key={difficulty} value={difficulty}>
+                    {difficulty === "all" ? "All Levels" : difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

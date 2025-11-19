@@ -187,7 +187,9 @@ const ExerciseDetail = () => {
         ) : (
           <Card className="p-8 animate-scale-in">
             <h2 className="text-2xl font-bold mb-4 text-center">{currentStep.title}</h2>
-            <div className={`text-6xl font-bold text-center mb-4 ${isPaused ? 'text-muted-foreground' : 'bg-gradient-primary bg-clip-text text-transparent'}`}>
+            <div className={`text-6xl font-bold text-center mb-4 ${
+  isPaused ? "text-muted-foreground" : "text-primary"
+}`}>
               {formatTime(timeRemaining)}
             </div>
             <p className="text-center text-lg mb-6">{currentStep.description}</p>

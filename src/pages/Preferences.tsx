@@ -1,3 +1,4 @@
+// Updated Preferences.tsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -11,16 +12,26 @@ import {
   Zap,
   ArrowRight,
   Check,
-  Loader2
+  Loader2,
+  Settings
 } from "lucide-react";
 import { toast } from "sonner";
+import { ActivityPreferenceForm } from "@/components/ActivityPreferenceForm";
 
-interface Activity {
+export interface Activity {
   activity_id: string;
   name: string;
   description: string;
   category: string;
   ideal_conditions: any;
+}
+
+interface ActivityPreference {
+  preferred_temperature: number;
+  light_preference: "dim" | "medium" | "bright";
+  noise_tolerance: "low" | "medium" | "high";
+  priority: "low" | "medium" | "high";
+  notes?: string;
 }
 
 const iconMap: Record<string, any> = {
@@ -45,6 +56,9 @@ const Preferences = () => {
   const navigate = useNavigate();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
+  const [detailedPreferences, setDetailedPreferences] = useState<Record<string, ActivityPreference>>({});
+  const [currentStep, setCurrentStep] = useState<"select" | "configure">("select");
+  const [currentActivity, setCurrentActivity] = useState<Activity | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -73,18 +87,41 @@ const Preferences = () => {
     );
   };
 
+  const configureActivity = (activity: Activity) => {
+    setCurrentActivity(activity);
+    setCurrentStep("configure");
+  };
+
+  const handleSaveDetailedPreferences = (preferences: ActivityPreference) => {
+    if (currentActivity) {
+      setDetailedPreferences(prev => ({
+        ...prev,
+        [currentActivity.activity_id]: preferences
+      }));
+      setCurrentStep("select");
+      toast.success(`Preferences saved for ${currentActivity.name}`);
+    }
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
       const { userAPI } = await import("@/lib/api");
       
-      // Build activity preferences object using activity names
+      // Build activity preferences object using activity IDs and detailed preferences
       const activityPreferences: any = {};
+      
       selected.forEach(activityName => {
-        activityPreferences[activityName] = { 
-          priority: "high",
-          enabled: true
-        };
+        const activity = activities.find(a => a.name === activityName);
+        if (activity) {
+          // Use the detailed preferences if available, otherwise use defaults
+          activityPreferences[activity.activity_id] = detailedPreferences[activity.activity_id] || {
+            preferred_temperature: 22,
+            light_preference: "medium",
+            noise_tolerance: "medium",
+            priority: "high"
+          };
+        }
       });
 
       await userAPI.updatePreferences({
@@ -121,6 +158,23 @@ const Preferences = () => {
     );
   }
 
+  // Configuration Step
+  if (currentStep === "configure" && currentActivity) {
+    return (
+      <div className="min-h-screen bg-gradient-wellness p-4">
+        <div className="max-w-2xl mx-auto pt-8">
+          <ActivityPreferenceForm
+            activity={currentActivity}
+            initialPreferences={detailedPreferences[currentActivity.activity_id]}
+            onSave={handleSaveDetailedPreferences}
+            onBack={() => setCurrentStep("select")}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Selection Step
   return (
     <div className="min-h-screen bg-gradient-wellness p-4 pb-24">
       <div className="max-w-2xl mx-auto pt-8">
@@ -128,7 +182,7 @@ const Preferences = () => {
         <div className="text-center mb-8 animate-fade-in">
           <h1 className="text-3xl font-bold mb-2">Your Wellness Profile</h1>
           <p className="text-muted-foreground">
-            Select activities that matter most to you
+            Select activities that matter most to you, then configure your preferences
           </p>
         </div>
 
@@ -138,13 +192,13 @@ const Preferences = () => {
             const Icon = iconMap[activity.category] || Brain;
             const color = colorMap[activity.category] || "from-blue-400 to-cyan-400";
             const isSelected = selected.includes(activity.name);
+            const hasDetailedPrefs = detailedPreferences[activity.activity_id];
             
             return (
               <Card
                 key={activity.activity_id}
-                onClick={() => togglePreference(activity.name)}
                 className={`
-                  relative p-6 cursor-pointer transition-all duration-300
+                  relative p-6 transition-all duration-300
                   hover:scale-105 hover:shadow-wellness-md
                   ${isSelected ? 'ring-2 ring-primary shadow-wellness-md' : 'hover:ring-1 hover:ring-border'}
                   animate-scale-in
@@ -155,6 +209,13 @@ const Preferences = () => {
                 {isSelected && (
                   <div className="absolute top-3 right-3 w-6 h-6 bg-primary rounded-full flex items-center justify-center animate-scale-in">
                     <Check className="w-4 h-4 text-white" />
+                  </div>
+                )}
+
+                {/* Configuration Indicator */}
+                {hasDetailedPrefs && (
+                  <div className="absolute top-3 left-3 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center animate-scale-in">
+                    <Settings className="w-3 h-3 text-white" />
                   </div>
                 )}
 
@@ -170,7 +231,30 @@ const Preferences = () => {
 
                 {/* Text */}
                 <h3 className="font-semibold mb-1 text-sm">{activity.name}</h3>
-                <p className="text-xs text-muted-foreground">{activity.description}</p>
+                <p className="text-xs text-muted-foreground mb-3">{activity.description}</p>
+
+                {/* Action Buttons */}
+                <div className="flex gap-2">
+                  <Button
+                    variant={isSelected ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => togglePreference(activity.name)}
+                    className="flex-1 text-xs"
+                  >
+                    {isSelected ? "Selected" : "Select"}
+                  </Button>
+                  
+                  {isSelected && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => configureActivity(activity)}
+                      className="text-xs"
+                    >
+                      {hasDetailedPrefs ? "Edit" : "Configure"}
+                    </Button>
+                  )}
+                </div>
               </Card>
             );
           })}
@@ -179,6 +263,18 @@ const Preferences = () => {
         {activities.length === 0 && !loading && (
           <Card className="p-8 text-center">
             <p className="text-muted-foreground">No activities available</p>
+          </Card>
+        )}
+
+        {/* Progress Indicator */}
+        {selected.length > 0 && (
+          <Card className="p-4 mb-6">
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">
+                {selected.length} activity{selected.length > 1 ? 's' : ''} selected • 
+                {Object.keys(detailedPreferences).length} configured
+              </p>
+            </div>
           </Card>
         )}
 

@@ -80,7 +80,7 @@ const Dashboard = () => {
 
   const fetchGeneralRecommendations = async () => {
     const token = localStorage.getItem("envira_token");
-    const response = await fetch("https://envira-backend-production.up.railway.app/recommendations/general", {
+    const response = await fetch("https://envira-backend-production-d0a6.up.railway.app/recommendations/general", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -177,42 +177,45 @@ const Dashboard = () => {
 
       <div className="max-w-2xl mx-auto p-4 space-y-6">
         {/* Score Card with Fixed Visibility and Animation */}
-        {deviceData && (
-          <Card className="p-8 text-center relative overflow-hidden animate-scale-in hover:shadow-wellness-md transition-all duration-300">
-            {/* Animated background effect */}
-            <div className={`absolute inset-0 bg-gradient-to-br from-blue-500/5 to-green-500/5 ${scoreAnimation ? 'animate-pulse' : ''}`}></div>
-            
-            <div className="relative z-10">
-              <div className={`text-7xl font-black mb-4 transition-all duration-500 ${
-                scoreAnimation ? 'animate-bounce scale-110' : ''
-              }`} style={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }}>
-                {Math.round(currentScore)}
-              </div>
-              
-              <div className="flex items-center justify-center gap-3 mb-3">
-                {StatusIcon && (
-                  <StatusIcon className={`h-6 w-6 ${
-                    scoreAnimation ? 'animate-ping' : ''
-                  }`} />
-                )}
-                <Badge className={`${getScoreColor(currentScore)} text-white px-4 py-1 text-sm font-semibold transition-all duration-300 ${
-                  scoreAnimation ? 'animate-pulse' : ''
-                }`}>
-                  {status?.text}
-                </Badge>
-              </div>
-              
-              <p className="text-sm text-muted-foreground font-medium">
-                {formatTimestamp(deviceData.timestamp || deviceData.ts)}
-              </p>
-            </div>
-          </Card>
+       {deviceData && (
+  <Card className="p-8 text-center relative overflow-hidden transition-all duration-300 hover:shadow-wellness-md animate-scale-in">
+    {/* Remove the colored background that's causing the issue */}
+    {/* <div className={`absolute inset-0 bg-gradient-to-br from-indigo-200/10 to-green-200/10 ${scoreAnimation ? 'animate-pulse' : ''}`}></div> */}
+    
+    <div className="relative z-10">
+      {/* Score with clean, visible colors */}
+      <div className={`text-7xl font-black mb-2 transition-all duration-500 ${scoreAnimation ? 'animate-bounce scale-110' : ''} ${
+        currentScore >= 80 ? 'text-green-600' 
+        : currentScore >= 60 ? 'text-amber-600' 
+        : 'text-red-600'
+      }`}>
+        {Math.round(currentScore)}
+      </div>
+      
+      {/* Badge and Icon */}
+      <div className="flex items-center justify-center gap-3 mb-2">
+        {StatusIcon && (
+          <StatusIcon className={`h-6 w-6 ${
+            currentScore >= 80 ? 'text-green-500' 
+            : currentScore >= 60 ? 'text-amber-500' 
+            : 'text-red-500'
+          } ${scoreAnimation ? 'animate-ping' : ''}`} />
         )}
+        <Badge className={`${
+          currentScore >= 80 ? 'bg-green-500 hover:bg-green-600' 
+          : currentScore >= 60 ? 'bg-amber-500 hover:bg-amber-600' 
+          : 'bg-red-500 hover:bg-red-600'
+        } text-white px-4 py-1 text-sm font-semibold transition-all duration-300 ${scoreAnimation ? 'animate-pulse' : ''}`}>
+          {status?.text}
+        </Badge>
+      </div>
+
+      {/* Description */}
+      <p className="text-sm text-muted-foreground font-medium mb-1">Quality Index Score</p>
+      <p className="text-xs text-muted-foreground">{formatTimestamp(deviceData.timestamp || deviceData.ts)}</p>
+    </div>
+  </Card>
+)}
 
         {/* Sensors Grid with Enhanced Animations */}
         {deviceData && deviceData.sensors && (

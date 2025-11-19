@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://envira-backend-production.up.railway.app";
+const API_BASE_URL = "https://envira-backend-production-d0a6.up.railway.app";
 
 // Token management
 export const getAuthToken = () => localStorage.getItem("envira_token");
@@ -69,8 +69,18 @@ export const userAPI = {
 export const deviceAPI = {
   getLatest: (deviceId: string) => apiRequest(`/latest/${deviceId}`),
   getLatestSummary: (deviceId: string) => apiRequest(`/latest/device/${deviceId}/summary`),
-  getData: (deviceId: string, limit = 50, hours = 24) =>
-    apiRequest(`/devices/${deviceId}/data?limit=${limit}&hours=${hours}`),
+  getData: (deviceId: string, limit = 1000, hours?: number) => {
+    // Build query parameters
+    const params = new URLSearchParams();
+    params.append('limit', limit.toString());
+    
+    if (hours !== undefined) {
+      params.append('hours', hours.toString());
+    }
+    
+    return apiRequest(`/devices/${deviceId}/data?${params.toString()}`);
+  },
+
 };
 
 // Recommendations endpoints
