@@ -1,73 +1,58 @@
-# Welcome to your Lovable project
+# Envira Mobile
 
-## Project info
+A React-based frontend for the IoT Indoor Monitoring System that
+provides users with a comprehensive dashboard to track their fitness
+activities, view quality scores, and receive personalized
+recommendations.
 
-**URL**: https://lovable.dev/projects/14d96a6e-e4da-4bff-99c8-97ca3ac24a62
+## Features
 
-## How can I edit this code?
+-   **User Authentication** -- Secure login system\
+-   **Interactive Dashboard** -- Overview of Quality Index Score\
+-   **Quality Score Index** -- Visual representation of performance
+    metrics\
+-   **Personalized Recommendations** -- Activity suggestions based on
+    user preferences\
+-   **Exercise Management** -- Browse, filter, and complete exercises\
+-   **History Tracking** -- View score history and exercise completion
+    history\
+-   **Real-time Updates** -- Live data from IoT sensors via backend API
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+-   **Frontend Framework:** React 18+\
+-   **State Management:** React Context API / Redux (if applicable)\
+-   **HTTP Client:** Axios / Fetch API\
+-   **Styling:** CSS3 / Styled Components / Tailwind CSS (specify
+    which)\
+-   **Charts:** Chart.js / Recharts (for quality score visualization)\
+-   **Routing:** React Router DOM\
+-   **Build Tool:** Vite / Create React App
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/14d96a6e-e4da-4bff-99c8-97ca3ac24a62) and start prompting.
+## Installation
 
-Changes made via Lovable will be committed automatically to this repo.
+### 1. Clone the repository
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+``` bash
+git clone <repository-url>
+cd fitness-frontend
 ```
 
-**Edit a file directly in GitHub**
+### 2. Install dependencies
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+``` bash
+npm install
+```
 
-**Use GitHub Codespaces**
+### 3. Environment Setup
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Configure required environment variables in a `.env` file.
 
-## What technologies are used for this project?
+### 4. Start development server
 
-This project is built with:
+``` bash
+npm start
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/14d96a6e-e4da-4bff-99c8-97ca3ac24a62) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+The application will open at:\
+http://localhost:3000
